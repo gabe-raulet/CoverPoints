@@ -9,7 +9,7 @@
 #define SMALL_RADIUS 3.0f
 #define LARGE_RADIUS 6.0f
 
-int DrawPoints(PointSet set, int hover_index, int nearest_index);
+int DrawPoints(PointSet set, int hover_index);
 
 int main(int argc, char *argv[])
 {
@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
     Point cursor;
     int inside;
-    int hover_index, nearest_index;
+    int hover_index;
     int left_pressed, right_pressed, pressed;
 
     while (!WindowShouldClose())
@@ -48,16 +48,15 @@ int main(int argc, char *argv[])
             }
         }
 
-        nearest_index = hover_index;
         hover_index = inside? hover_index : -1;
-        DrawPoints(set, hover_index, nearest_index);
+        DrawPoints(set, hover_index);
     }
 
     CloseWindow();
     return 0;
 }
 
-int DrawPoints(PointSet set, int hover_index, int nearest_index)
+int DrawPoints(PointSet set, int hover_index)
 {
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -66,8 +65,7 @@ int DrawPoints(PointSet set, int hover_index, int nearest_index)
     {
         Point pt = set.points[i];
         double radius = i == hover_index? LARGE_RADIUS : SMALL_RADIUS;
-        Color color = i == nearest_index? RED : BLACK;
-        DrawCircleV(pt, radius, color);
+        DrawCircleV(pt, radius, BLACK);
     }
 
     EndDrawing();
