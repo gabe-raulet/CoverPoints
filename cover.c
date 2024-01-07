@@ -1,4 +1,5 @@
 #include "cover.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -197,6 +198,14 @@ int ComputeGreedyPermutation(CoverSet *set)
         perm[i] = FarthestFrom(set, i-1);
     }
 
+    fprintf(stderr, "Recomputed Greedy Permutation:\n");
+
+    for (int i = 0; i < size; ++i)
+    {
+        fprintf(stderr, "greedy[%d] = %d\n", i, perm[i]);
+    }
+
+    fprintf(stderr, "\n");
     return 0;
 }
 

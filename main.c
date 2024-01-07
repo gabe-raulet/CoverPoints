@@ -25,26 +25,16 @@ int main(int argc, char *argv[])
     CoverState state;
     CoverStateInit(&state);
 
+    CoverSetDraw(&set);
+
     while (!WindowShouldClose())
     {
         CoverStateUpdate(&state, &set);
 
-        if (state.dragid >= 0)
-        {
-            CoverSetMovePoint(&set, state.dragid, state.cursor);
-        }
-        else if (state.add)
-        {
-            CoverSetAddPoint(&set, state.cursor);
-        }
-        else if (state.remove)
-        {
-            CoverSetRemovePoint(&set, state.hoverid);
-        }
-        else if (state.setseed)
-        {
-            CoverSetSeedSelect(&set, state.hoverid);
-        }
+        if (state.dragid >= 0) CoverSetMovePoint(&set, state.dragid, state.cursor);
+        else if (state.add) CoverSetAddPoint(&set, state.cursor);
+        else if (state.remove) CoverSetRemovePoint(&set, state.hoverid);
+        else if (state.setseed) CoverSetSeedSelect(&set, state.hoverid);
 
         CoverSetDraw(&set);
     }
