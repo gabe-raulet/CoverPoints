@@ -20,7 +20,8 @@ int main(int argc, char *argv[])
     Point cursor;
     int inside;
     int hover_index, seed_index;
-    int left_pressed, right_pressed, pressed, left_command_down;
+    int left_pressed, right_pressed, pressed, left_down, left_command_down;
+    int drag_index = -1;
 
     seed_index = 0;
 
@@ -29,15 +30,24 @@ int main(int argc, char *argv[])
         cursor = GetMousePosition();
         left_pressed = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
         right_pressed = IsMouseButtonPressed(MOUSE_BUTTON_RIGHT);
+        left_down = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
         left_command_down = IsKeyDown(KEY_LEFT_SUPER);
 
         pressed = left_pressed || right_pressed;
         hover_index = NearestNeighbor(&set, cursor, LARGE_RADIUS, &inside);
 
+        if (!left_down && drag_index != -1)
+            drag_index = -1;
+
         if (pressed)
         {
             if (inside)
             {
+                if (left_pressed && drag_index == -1)
+                {
+                    drag_index = hover_index;
+                }
+
                 if (right_pressed)
                 {
                     if (seed_index > hover_index)
@@ -57,6 +67,11 @@ int main(int argc, char *argv[])
                     AddPoint(&set, cursor);
                 }
             }
+        }
+
+        if (drag_index != -1)
+        {
+            MovePoint(&set, drag_index, cursor);
         }
 
         hover_index = inside? hover_index : -1;
