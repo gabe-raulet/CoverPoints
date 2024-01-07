@@ -9,7 +9,7 @@
 #define SMALL_RADIUS 3.0f
 #define LARGE_RADIUS 6.0f
 
-int DrawPoints(PointSet set, int hover_index);
+int DrawPoints(PointSet set, int hover_index, int seed_index);
 
 int main(int argc, char *argv[])
 {
@@ -19,14 +19,18 @@ int main(int argc, char *argv[])
 
     Point cursor;
     int inside;
-    int hover_index;
-    int left_pressed, right_pressed, pressed;
+    int hover_index, seed_index;
+    int left_pressed, right_pressed, pressed, left_command_down;
+
+    seed_index = 0;
 
     while (!WindowShouldClose())
     {
         cursor = GetMousePosition();
         left_pressed = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
         right_pressed = IsMouseButtonPressed(MOUSE_BUTTON_RIGHT);
+        left_command_down = IsKeyDown(KEY_LEFT_SUPER);
+
         pressed = left_pressed || right_pressed;
         hover_index = NearestNeighbor(&set, cursor, LARGE_RADIUS, &inside);
 
@@ -36,7 +40,14 @@ int main(int argc, char *argv[])
             {
                 if (right_pressed)
                 {
+                    if (seed_index > hover_index)
+                        seed_index--;
+
                     RemovePoint(&set, hover_index);
+                }
+                else if (left_pressed && left_command_down)
+                {
+                    seed_index = hover_index;
                 }
             }
             else
@@ -49,14 +60,14 @@ int main(int argc, char *argv[])
         }
 
         hover_index = inside? hover_index : -1;
-        DrawPoints(set, hover_index);
+        DrawPoints(set, hover_index, seed_index);
     }
 
     CloseWindow();
     return 0;
 }
 
-int DrawPoints(PointSet set, int hover_index)
+int DrawPoints(PointSet set, int hover_index, int seed_index)
 {
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -65,7 +76,8 @@ int DrawPoints(PointSet set, int hover_index)
     {
         Point pt = set.points[i];
         double radius = i == hover_index? LARGE_RADIUS : SMALL_RADIUS;
-        DrawCircleV(pt, radius, BLACK);
+        Color color = i == seed_index? RED : BLACK;
+        DrawCircleV(pt, radius, color);
     }
 
     EndDrawing();
