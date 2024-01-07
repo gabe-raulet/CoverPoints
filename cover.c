@@ -223,9 +223,9 @@ int CoverSetUpdate(CoverSet *set)
     return 0;
 }
 
-int CoverSetDraw(CoverSet *set)
+int CoverSetDraw(CoverSet *set, const CoverState *state)
 {
-    if (set == NULL)
+    if (set == NULL || state == NULL)
         return -1;
 
     if (!set->ready)
@@ -242,14 +242,9 @@ int CoverSetDraw(CoverSet *set)
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
-    int inside;
-    int nearestid;
-
-    nearestid = CoverSetNearestNeighbor(set, GetMousePosition(), RADIUS_LARGE, &inside);
-
     for (int i = 0; i < size; ++i)
     {
-        double radius = inside && i == nearestid? RADIUS_LARGE : RADIUS_SMALL;
+        double radius = i == state->hoverid? RADIUS_LARGE : RADIUS_SMALL;
         Color color = i == seed? RED : BLACK;
         DrawCircleV(points[i], radius, color);
     }
@@ -316,3 +311,4 @@ int CoverStateUpdate(CoverState *state, const CoverSet *set)
 
     return 0;
 }
+

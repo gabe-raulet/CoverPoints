@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     CoverState state;
     CoverStateInit(&state);
 
-    CoverSetDraw(&set);
+    CoverSetDraw(&set, &state);
 
     while (!WindowShouldClose())
     {
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
         else if (state.remove) CoverSetRemovePoint(&set, state.hoverid);
         else if (state.setseed) CoverSetSeedSelect(&set, state.hoverid);
 
-        CoverSetDraw(&set);
+        CoverSetDraw(&set, &state);
     }
 
     CoverSetFree(&set);

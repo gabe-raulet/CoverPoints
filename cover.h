@@ -14,6 +14,14 @@ typedef struct
     int ready;
 } CoverSet;
 
+typedef struct
+{
+    Point cursor;
+    int nearestid, dragid, hoverid;
+    int add, remove, setseed;
+} CoverState;
+
+
 #define RADIUS_SMALL 2.5f
 #define RADIUS_LARGE 5.0f
 
@@ -27,14 +35,7 @@ int CoverSetRemovePoint(CoverSet *set, int index);
 int CoverSetNearestNeighbor(const CoverSet *set, Point query, double radius, int *inside);
 int CoverSetSeedSelect(CoverSet *set, int index);
 int CoverSetUpdate(CoverSet *set);
-int CoverSetDraw(CoverSet *set);
-
-typedef struct
-{
-    Point cursor;
-    int nearestid, dragid, hoverid;
-    int add, remove, setseed;
-} CoverState;
+int CoverSetDraw(CoverSet *set, const CoverState *state);
 
 int CoverStateInit(CoverState *state);
 int CoverStateUpdate(CoverState *state, const CoverSet *set);
