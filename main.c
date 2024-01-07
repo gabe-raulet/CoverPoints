@@ -9,7 +9,7 @@
 #define SMALL_RADIUS 3.0f
 #define LARGE_RADIUS 6.0f
 
-int DrawPoints(PointSet set);
+int DrawPoints(PointSet set, int hover_index, int nearest_index);
 
 int main(int argc, char *argv[])
 {
@@ -17,23 +17,47 @@ int main(int argc, char *argv[])
 
     InitWindow(1000, 600, "PointSet");
 
+    Point cursor;
+    int inside;
+    int hover_index, nearest_index;
+    int left_pressed, right_pressed, pressed;
+
     while (!WindowShouldClose())
     {
-        Point cursor = GetMousePosition();
+        cursor = GetMousePosition();
+        left_pressed = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+        right_pressed = IsMouseButtonPressed(MOUSE_BUTTON_RIGHT);
+        pressed = left_pressed || right_pressed;
+        hover_index = NearestNeighbor(&set, cursor, LARGE_RADIUS, &inside);
 
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        if (pressed)
         {
-            AddPoint(&set, cursor);
+            if (inside)
+            {
+                if (right_pressed)
+                {
+                    RemovePoint(&set, hover_index);
+                }
+            }
+            else
+            {
+                if (left_pressed)
+                {
+                    AddPoint(&set, cursor);
+                }
+            }
         }
 
-        DrawPoints(set);
+        nearest_index = hover_index;
+        hover_index = inside? hover_index : -1;
+        DrawPoints(set, hover_index, nearest_index);
     }
 
     CloseWindow();
     return 0;
 }
 
-int DrawPoints(PointSet set)
+int DrawPoints(PointSet set, int hover_index, int nearest_index)
 {
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -41,7 +65,9 @@ int DrawPoints(PointSet set)
     for (int i = 0; i < set.size; ++i)
     {
         Point pt = set.points[i];
-        DrawCircleV(pt, SMALL_RADIUS, BLACK);
+        double radius = i == hover_index? LARGE_RADIUS : SMALL_RADIUS;
+        Color color = i == nearest_index? RED : BLACK;
+        DrawCircleV(pt, radius, color);
     }
 
     EndDrawing();
