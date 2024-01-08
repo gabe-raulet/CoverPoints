@@ -280,16 +280,20 @@ int CoverSetDraw(CoverSet *set, const CoverState *state)
                 permid = i;
 
         double coverage_radius = CoverSetCoverageRadius(set, permid);
+        DrawText(TextFormat("Coverage Radius: %03f", coverage_radius), 20, 20, 20, BLUE);
 
         for (int i = 0; i <= permid; ++i)
         {
             DrawCircleLinesV(points[perm[i]], coverage_radius, BLUE);
-            DrawCircleV(points[perm[i]], RADIUS_SMALL, RED);
+            DrawCircleLinesV(points[perm[i]], coverage_radius/2, ORANGE);
+            double radius = perm[i] == state->hoverid? RADIUS_LARGE : RADIUS_SMALL;
+            DrawCircleV(points[perm[i]], radius, RED);
         }
 
         if (perm[permid+1] < size)
         {
-            DrawCircleV(points[perm[permid+1]], RADIUS_SMALL, GREEN);
+            double radius = perm[permid+1] == state->hoverid? RADIUS_LARGE : RADIUS_SMALL;
+            DrawCircleV(points[perm[permid+1]], radius, GREEN);
         }
 
     }
