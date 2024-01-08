@@ -22,8 +22,8 @@ typedef struct
 } CoverState;
 
 
-#define RADIUS_SMALL 2.5f
-#define RADIUS_LARGE 5.0f
+#define RADIUS_SMALL 3.0f
+#define RADIUS_LARGE 6.0f
 
 double PointDistance(Point pt1, Point pt2);
 

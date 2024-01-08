@@ -198,14 +198,6 @@ int ComputeGreedyPermutation(CoverSet *set)
         perm[i] = FarthestFrom(set, i-1);
     }
 
-    fprintf(stderr, "Recomputed Greedy Permutation:\n");
-
-    for (int i = 0; i < size; ++i)
-    {
-        fprintf(stderr, "greedy[%d] = %d\n", i, perm[i]);
-    }
-
-    fprintf(stderr, "\n");
     return 0;
 }
 
@@ -223,6 +215,34 @@ int CoverSetUpdate(CoverSet *set)
     return 0;
 }
 
+double CoverSetCoverageRadius(const CoverSet *set, int last)
+{
+    if (set == NULL || last < 0 || last >= set->size)
+        return -1.0;
+
+    if (last == set->size - 1)
+        return 0.0;
+
+    Point *points = set->points;
+    int *perm = set->perm;
+    Point query = points[perm[last+1]];
+
+    double mindist = 1e20;
+
+    for (int i = 0; i <= last; ++i)
+    {
+        Point point = points[perm[i]];
+        double dist = PointDistance(point, query);
+
+        if (dist < mindist)
+        {
+            mindist = dist;
+        }
+    }
+
+    return mindist;
+}
+
 int CoverSetDraw(CoverSet *set, const CoverState *state)
 {
     if (set == NULL || state == NULL)
@@ -236,6 +256,7 @@ int CoverSetDraw(CoverSet *set, const CoverState *state)
     assert(set->ready);
 
     Point *points = set->points;
+    int *perm = set->perm;
     int size = set->size;
     int seed = set->seed;
 
@@ -244,9 +265,33 @@ int CoverSetDraw(CoverSet *set, const CoverState *state)
 
     for (int i = 0; i < size; ++i)
     {
-        double radius = i == state->hoverid? RADIUS_LARGE : RADIUS_SMALL;
-        Color color = i == seed? RED : BLACK;
-        DrawCircleV(points[i], radius, color);
+        double radius = perm[i] == state->hoverid? RADIUS_LARGE : RADIUS_SMALL;
+        Color color = perm[i] == seed? RED : BLACK;
+        DrawCircleV(points[perm[i]], radius, color);
+        DrawText(TextFormat("%02i", i), points[perm[i]].x - 5, points[perm[i]].y - 20, 10, BLUE);
+    }
+
+    if (state->hoverid >= 0)
+    {
+        int permid = -1;
+
+        for (int i = 0; i < size && permid < 0; ++i)
+            if (perm[i] == state->hoverid)
+                permid = i;
+
+        double coverage_radius = CoverSetCoverageRadius(set, permid);
+
+        for (int i = 0; i <= permid; ++i)
+        {
+            DrawCircleLinesV(points[perm[i]], coverage_radius, BLUE);
+            DrawCircleV(points[perm[i]], RADIUS_SMALL, RED);
+        }
+
+        if (perm[permid+1] < size)
+        {
+            DrawCircleV(points[perm[permid+1]], RADIUS_SMALL, GREEN);
+        }
+
     }
 
     EndDrawing();
